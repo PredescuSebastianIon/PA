@@ -3,9 +3,37 @@
 **Autor**: Predescu Sebastian-Ion
 **Grupa**: 322CC
 
+## Cuprins
+
+- [Programare dinamica](#programare-dinamica)
+- [Backtracking](#backtracking)
+- [Grafuri](#grafuri)
+  - [BFS - Breadth-First Search](#bfs---breadth-first-search)
+  - [DFS - Depth-First Search](#dfs---depth-first-search)
+  - [Componente Conexe, Tare-Conexe, Biconexe](#componente-conexe-tare-conexe-biconexe)
+  - [Sortare Topologica (TopoSort)](#sortare-topologica-toposort)
+    - [Algoritmul lui Kahn -- folosind BFS](#algoritmul-lui-kahn----folosind-bfs)
+    - [Sortare topologica folosind DFS](#sortare-topologica-folosind-dfs)
+  - [Tarjan algorithm](#tarjan-algorithm)
+    - [Tarjan SCC (strongly connected components)](#tarjan-scc-strongly-connected-components)
+    - [Tarjan CV (cut vertex)](#tarjan-cv-cut-vertex)
+    - [Tarjan CE (critical edges)](#tarjan-ce-critical-edges)
+    - [Tarjan BCC (biconex...)](#tarjan-bcc-biconex)
+  - [Kosaraju](#kosaraju)
+  - [Dijkstra](#dijkstra)
+  - [Bellman-Ford](#bellman-ford)
+  - [Roy-Floyd (Floyd-Warshall)](#roy-floyd-floyd-warshall)
+  - [Johnson](#johnson)
+  - [Kruskal](#kruskal)
+  - [Prim](#prim)
+  - [Karger, Klein & Tarjan -- Algoritmi randomizati pentru APM](#karger-klein--tarjan----algoritmi-randomizati-pentru-apm)
+  - [Bernard Chazelle -- Algoritm determinist cu o complexitate liniara](#bernard-chazelle----algoritm-determinist-cu-o-complexitate-liniara)
+
+---
+
 - [ ] BFS
 - [ ] DFS
-- [ ] TopoSort
+- [x] TopoSort
 - [>] Tarjan
 - [x] Korsajaru
 - [x] Dijkstra
@@ -212,6 +240,41 @@ public static void main(String[] args) {
 ```
 
 ### Tarjan CV (cut vertex)
+
+```java
+static void tarjanCV(
+    int curr, 
+    List<List<Integer>> graph, 
+    int parent,
+    int[] time, 
+    int[] low, 
+    int[] currTime, 
+    boolean[] isCutVertex
+) {
+    time[curr] = low[curr] = currTime[0]++;
+    int children = 0;
+
+    for (int neigh : graph.get(curr)) {
+        if (time[neigh] == -1) {
+            children++;
+            tarjanCV(neigh, graph, curr, time, low, currTime, isCutVertex);
+            low[curr] = Integer.min(low[curr], low[neigh]);
+
+            // Conditia pentru cut vertex
+            if (parent != -1 && low[neigh] >= time[curr])
+                isCutVertex[curr] = true;
+        } else if (neigh != parent) {
+            // Back edge
+            low[curr] = Integer.min(low[curr], time[neigh]);
+        }
+    }
+
+    // conditia pentru root
+    if (parent == -1 && children > 1) {
+        isCutVertex[curr] = true;
+    }
+}
+```
 
 ### Tarjan CE (critical edges)
 
