@@ -3,7 +3,15 @@
 **Autor**: Predescu Sebastian-Ion
 **Grupa**: 322CC
 
-\tableofcontents
+- [ ] BFS
+- [ ] DFS
+- [ ] TopoSort
+- [>] Tarjan
+- [x] Korsajaru
+- [x] Dijkstra
+- [x] Bellman-Ford
+- [x] Floyd-Warshall
+- [ ] Jonhson
 
 # Programare dinamica
 
@@ -22,15 +30,192 @@ din orice nod se poate ajunge in orice alt nod si vice-versa.
 
 ## Sortare Topologica (TopoSort)
 
-## Tarjan SCC (strongly connected components)
+Sortarea topologica este o ordonare liniara a unui graf orientat, astfel incat 
+daca avem o muchie $(u, w)$, atunci $w$ va aparea dupa $u$ in sortarea 
+topologica.
+
+Exemplu
+
+```mermaid
+graph TD
+
+A(0) --> B(1)
+B --> C(2)
+C --> D(3)
+D --> E(4)
+```
+
+Exista 2 moduri de a implementa
+
+### Algoritmul lui Kahn -- folosind BFS
+
+```java
+static List<Integer> topoSort(int n, List<List<Integer>> graph) {
+    int[] indegree = new int[n];
+    List<Integer> sorted = new ArrayList<>(n);
+
+    for (int i = 0; i < n; i++) {
+        for (var neigh : graph.get(i)) {
+            indegree[neigh]++;
+        }
+    }
+
+    Queue <Integer> queue = new ArrayDeque<>();
+
+    for (int i = 0; i < n; i++)
+        if (indegree[i] == 0)
+            queue.add(i);
+    
+    while (!queue.isEmpty()) {
+        int curr = queue.poll();
+        
+        sorted.add(curr);
+
+        for (var neigh : graph.get(curr)) {
+            indegree[neigh]--;
+
+            if (indegree[neigh] == 0)
+                queue.add(neigh);
+        }
+    }
+
+    return sorted;
+}
+```
+
+### Sortare topologica folosind DFS
+
+```java
+static void topoSortDFS(int curr, List<List<Integer>> graph, Deque<Integer> sorted, boolean[] marked) {
+    marked[curr] = true;
+
+    for (var neigh : graph.get(curr)) {
+        if (marked[neigh])
+            continue;
+
+        topoSortDFS(neigh, graph, sorted, marked);
+    }
+
+    sorted.addLast(curr);
+}
+
+public static void main(String[] args) {
+    // Citeste valorile
+
+    boolean[] marked = new boolean[n];
+    for (int i = 0; i < n; i++)
+        if (!marked[i])
+            topoSortDFS(i, graph, sorted, marked);
+
+    // sortarea topologica este practic in ordinea inversa de pe stack
+    while (!sorted.isEmpty()) {
+        System.out.print(sorted.pollLast() + " ");
+    }
+}
+```
+
+## Tarjan algorithm
+
+> [!NOTE]
+> Algoritmul lui Tarjan este foarte versatil si poate fi adaptat
+> Acesta poate gasi: componentele tare conexe, nodurile critice, muchiile critice etc.
+
+Ideea de baza a algoritmului:
+- Un DFS produce un arbore din graful initial
+- SCC-urile sunt subarbori ai arborelui produs de DFS
+- Mai avem doar de gasit **radacina** din fiecare SCC
+
+Pentru a gasi radacina, trebuie sa definim:
+* `time[node]` = timpul la care am ajuns la nodul *node* prin dfs 
+(al catelea nod in parcurgere)
+* `low[node]` = cel mai mic `time` accesibil din subarborele lui *node* in 
+arborele DFS, folosind oricate muchii din arbore si cel mult o muchie de intoarcere
+
+Initial, `low[node] = time[node]`, dar, dupa se actualizeaza in timp ce parcurgem:
+* low[node] = min(low[node], low[fiu])
+* low[node] = min(low[node], time[stramos])
+
+Totusi, pentru a functiona algoritmul, acesta necesita si o stiva, care reprezinta 
+toate nodurile care sunt in curs de vizitare si nu apartin unui SCC inca. Asadar, 
+in momentul in care gasim un SCC, scoatem toate nodurile de pe stiva. Acest lucru 
+ne ajuta sa limitam putin low-ul, comparandu-l cu timpul unui stramos **NUMAI** 
+daca stramosul se afla pe stiva. Daca nu se afla, atunci apartine deja unui SCC 
+si nu mai prezinta interes.
+
+Nodul *node* este radacina daca `low[node] = time[node]` dupa ce s-a terminat 
+parcurgerea. Aceasta inseamna ca nu exista niciun nod care sa poata *urca* mai 
+sus in arbore, sunt toate captive in SCC-ul curent.
+
+### Tarjan SCC (strongly connected components)
+
+Implementare
+```java
+static void tarjanSCC(
+    int curr, 
+    List<List<Integer>> graph, 
+    Deque<Integer> stack,  
+    boolean[] onStack, 
+    int[] time, 
+    int[] low, 
+    int[] currTime, 
+    List<List<Integer>> SCC
+) {
+    time[curr] = currTime[0]++;
+    low[curr] = time[curr];
+    stack.addLast(curr);
+    onStack[curr] = true;
+
+    for (Integer neigh : graph.get(curr)) {
+        if (time[neigh] == -1) {
+            // Case 1 - we did not visited this, so it's a node in curr subtree
+            tarjanSCC(neigh, graph, stack, onStack, time, low, currTime, SCC);
+            low[curr] = Integer.min(low[curr], low[neigh]);
+        } else if (onStack[neigh]) {
+            // Case 2 - we found an ancestor (back edge)
+            low[curr] = Integer.min(low[curr], time[neigh]);
+        }
+    }
 
 
+    // time to check if this is the head of a SCC
+    if (low[curr] != time[curr])
+        return;
 
-## Tarjan CV (cut vertex)
+    // found the SCC
+    SCC.add(new ArrayList<>());
 
-## Tarjan CE (critical edges)
+    while (!stack.isEmpty()) {
+        int node = stack.pollLast();
 
-## Tarjan BCC (biconex...)
+        onStack[node] = false;
+        SCC.getLast().add(node);
+        if (node == curr) break;
+    }
+}
+
+public static void main(String[] args) {
+    // Read the graph or hard code it
+
+    // Initialise the SCC, time (with -1), low, onStack, stack
+
+    // start the tarjan SCC alg just like a normal DFS
+
+    // Congrats! You now have all strongly connected components
+
+    // Java don't support sending primitives as reference
+    // Also Integer type is immutable
+    // So a great trick for getting around this limitation is 
+    // either to have a static field in the class
+    // or to make an array int[] currTime = {0} with a size of 1
+    // and use it as a single int
+}
+```
+
+### Tarjan CV (cut vertex)
+
+### Tarjan CE (critical edges)
+
+### Tarjan BCC (biconex...)
 
 ## Kosaraju
 
@@ -139,6 +324,50 @@ static List<List<Integer>> kosaraju(int n, List<List<Integer>> graph) {
 
 ## Dijkstra
 
+Rezolva problema `cel mai scurt drum` de la un nod src la orice alt nod din 
+graf. **Acest algoritm nu merge pentru muchii negative**.
+
+Acesta este relativ simplu: mentin continuu o coada de prioritati (pentru insert 
+si pop rapid) cu distanta de la nodul src la celelalte noduri (dam push la 
+$\{dist[x], x\}$), sortam dupa distanta si dupa vizitam vecinii nodului cu 
+distanta minima. Daca putem ajunge la un vecin de a lui $x$ mai rapid, atunci 
+modificam distanta si adaugam in coada.
+
+Implementare:
+```java
+record Elem(int dist, int node) {}
+
+record Muchie(int to, int cost) {}
+
+static int[] dijkstra(int n, int src, List<List<Muchie>> graph) {
+    int[] dist = new int[n];
+
+    Arrays.fill(dist, Integer.MAX_VALUE);
+    dist[src] = 0;
+
+    PriorityQueue<Elem> queue = new PriorityQueue<>((elem1, elem2) -> elem1.dist() - elem2.dist());
+    queue.add(new Elem(0, src));
+
+    while (!queue.isEmpty()) {
+        Elem curr = queue.poll();
+
+        // optimizare
+        // daca deja avem o distanta mai buna decat cea din coada, sarim peste
+        if (curr.dist() > dist[curr.node()])
+            continue;
+
+        for (Muchie neigh : graph.get(curr.node())) {
+            if (dist[neigh.to()] > curr.dist() + neigh.cost()) {
+                dist[neigh.to()] = curr.dist() + neigh.cost();
+                queue.add(new Elem(dist[neigh.to()], neigh.to()));
+            }
+        }
+    }
+
+    return dist;
+}
+```
+
 ## Bellman-Ford
 
 Rezolva problema `cel mai scurt drum` de la un nod src la orice alt nod din 
@@ -205,8 +434,8 @@ Rezolva problema `cel mai scurt drum` intr-un graf dens. Acesta gaseste toate
 perechile de drumuri intre oricare 2 noduri din graf.
 
 Ideea algoritmului: <br>
-dist[x][y] = drumul minim de la x la y <br>
-dist[x][y] = min(dist[x][y], dist[x][k] + dist[k][y]) <br>
+$dist[x][y]$ = drumul minim de la $x$ la $y$ <br>
+$dist[x][y] = min(dist[x][y], dist[x][k] + dist[k][y])$<br>
 Practic, folosim nodul k ca intermediar
 
 Initializam 
@@ -242,8 +471,8 @@ static void floydWarshall(int[][] dist) {
 Explicatia algoritmului:
 1. Aleg nodul k ca fiind intermediar
 2. Calculez drumul minim de la orice x la orice y, care trece printr-un nod 
-intermediar din multimea ${0, 1, \dots, k}$
-3. Stiu ca drumul va fi minim pentru ca de asemenea dist[x][k] si dist[k][y] 
+intermediar din multimea $\{0, 1, \dots, k\}$
+3. Stiu ca drumul va fi minim pentru ca de asemenea $dist[x][k]$ si $dist[k][y]$ 
 sunt drumurile minime ce au un nod intemediar in multimea ${0, 1, \dots, k - 1}$
 
 
