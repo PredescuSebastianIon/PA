@@ -18,7 +18,7 @@
     - [Tarjan SCC (strongly connected components)](#tarjan-scc-strongly-connected-components)
     - [Tarjan CV (cut vertex)](#tarjan-cv-cut-vertex)
     - [Tarjan CE (critical edges)](#tarjan-ce-critical-edges)
-    - [Tarjan BCC (biconex...)](#tarjan-bcc-biconex)
+    - [Tarjan BCC (Biconnected Components)](#tarjan-bcc-biconnected-components)
   - [Kosaraju](#kosaraju)
   - [Dijkstra](#dijkstra)
   - [Bellman-Ford](#bellman-ford)
@@ -34,7 +34,7 @@
 - [ ] BFS
 - [ ] DFS
 - [x] TopoSort
-- [>] Tarjan
+- [x] Tarjan
 - [x] Korsajaru
 - [x] Dijkstra
 - [x] Bellman-Ford
@@ -65,7 +65,7 @@ topologica.
 Exemplu
 
 ```mermaid
-graph TD
+graph LR
 
 A(0) --> B(1)
 B --> C(2)
