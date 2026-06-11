@@ -1,3 +1,5 @@
 .obsidian/
 .DS_Store
 
+# Folder with source files for practice problems
+problems/
