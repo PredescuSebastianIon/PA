@@ -31,7 +31,7 @@
     - [Prim](graphs/min_spanning_tree/prim.md)
     - [Karger, Klein & Tarjan](graphs/min_spanning_tree/karger_klein_tarjan.md)
   - **Flux**
-    - [Flux algorithms](graphs/flux/README.md)
+    - [Flux algorithms](Introduction.md)
 
 ## Backlog
 
@@ -62,4 +62,5 @@
   - [ ] Prim
   - [ ] Karger, Klein & Tarjan
 - **Flux**
-  - [ ] Flux algorithms
+  - [ ] Ford-Fulkerson
+  - [x] Edmonds-Karp
