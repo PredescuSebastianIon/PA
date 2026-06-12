@@ -58,3 +58,5 @@ static int[] bellmanFord(Muchie[] edges, int n, int src) {
     return dist;
 }
 ```
+
+Complexitate temporala: $O(M \times N)$

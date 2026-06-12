@@ -44,3 +44,26 @@ static int[] dijkstra(int n, int src, List<List<Muchie>> graph) {
     return dist;
 }
 ```
+
+Complexitatea temporala depinde de cum este implementat algoritmul:
+- In versiunea de mai sus (cu PriorityQueue), avem $O(M \times log N)$
+- In versiunea *neoptimizata*, in care am folosi un vector normal, in loc de 
+coada de prioritati, la fiecare iteratie ar trebui sa parcurgem tot vectorul 
+pentru a gasi nodul cu distanta minima (cautare liniara). Deci, complexitatea 
+temporala va fi $O(N ^ 2)$
+
+
+> [!NOTE]
+> TODO: 
+> implementari cu vector, heap binar, heap fibonnacci
+> Demonstrare corectitudine algoritm
+> De facut o paralela cand e mai bine fiecare implementare de folosit
+> De scris detalii despre heap ul fibonacci
+> Caz special Dijstra -- graf cu costuri mici -- Algoritmul lui Dial
+> Aplicatie:
+> Problema: găsește ciclul de cost minim care trece prin nodul v
+> Un **ciclu** care trece prin v înseamnă: pleci din v, mergi prin niște noduri, 
+> și te întorci înapoi la v.
+> v → ... → u → v
+> Costul ciclului = d[u] + w(u, v), adică distanța de la v până la u, plus arcul final înapoi la v.
+

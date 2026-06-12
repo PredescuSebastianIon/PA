@@ -46,3 +46,10 @@ Explicatia algoritmului:
 intermediar din multimea $\{0, 1, \dots, k\}$
 3. Stiu ca drumul va fi minim pentru ca de asemenea $dist[x][k]$ si $dist[k][y]$ 
 sunt drumurile minime ce au un nod intemediar in multimea ${0, 1, \dots, k - 1}$
+
+Complexitate temporala: $O(n ^ 3)$
+
+> [!NOTE]
+> De adaugat demonstratia pentru care Floyd-Warshall este corect
+> Aceasta se face prin inductie (floyd este practic o dinamica)
+
