@@ -1,17 +1,7 @@
 import java.util.*;
 
+// Main class
 public class EdmondsKarp {
-
-    static class Edge {
-        int to;
-        int cost;
-        Edge revEdge;
-
-        public Edge(int to, int cost) {
-            this.to   = to;
-            this.cost = cost;
-        }
-    }
 
     record TraceBack(int from, Edge originalEdge) {}
 
@@ -74,7 +64,31 @@ public class EdmondsKarp {
         return totalFlow;
     }
 
-    static void addEdge(List<List<Edge>> graph, int u, int v, int cap) {
+    public static void main(String[] args) {
+        List<List<Edge>> graph = CreateGraph.getGraph();
+        int n = graph.size();
+        int source = 0, sink = n - 1;
+
+        int totalFlow = edmondsKarp(source, sink, graph, n);
+        System.out.printf("Max flow de la %d la %d este %d\n", source, sink, totalFlow);
+        // Output: Max flow de la 0 la 5 este 23
+    }
+}
+
+// Helpers
+class Edge {
+    int to;
+    int cost;
+    Edge revEdge;
+
+    public Edge(int to, int cost) {
+        this.to = to;
+        this.cost = cost;
+    }
+}
+
+class CreateGraph {
+    private static void addEdge(List<List<Edge>> graph, int u, int v, int cap) {
         Edge forward  = new Edge(v, cap);
         Edge backward = new Edge(u, 0);
 
@@ -85,9 +99,10 @@ public class EdmondsKarp {
         graph.get(v).add(backward);
     }
 
-    public static void main(String[] args) {
+    public static List<List<Edge>> getGraph() {
         int n = 6;
         List<List<Edge>> graph = new ArrayList<>();
+
         for (int i = 0; i < n; i++)
             graph.add(new ArrayList<>());
 
@@ -102,8 +117,6 @@ public class EdmondsKarp {
         addEdge(graph, 3, 5, 20);
         addEdge(graph, 4, 5, 4);
 
-        int totalFlow = edmondsKarp(0, n - 1, graph, n);
-        System.out.printf("Max flow de la 0 la %d este %d%n", n - 1, totalFlow);
-        // Output: Max flow de la 0 la 5 este 23
+        return graph;
     }
 }
