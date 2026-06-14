@@ -104,7 +104,7 @@ static List<List<Integer>> kosaraju(int n, List<List<Integer>> graph) {
 }
 ```
 
-Complexitate temporala: $O(n + m)
+Complexitate temporala: $O(n + m)$
 
 n = numarul de noduri <br>
 m = numarul de arce
